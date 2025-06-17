@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>Stroop Color Test</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    #word {
+      font-size: 48px;
+      margin: 30px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Stroop 顏色測驗</h1>
+  <p>請點選文字所顯示的「字體顏色」，而不是它所寫的顏色名稱。</p>
+  <div id="word">紅色</div>
+  <div id="buttons"></div>
+  <div id="score">分數：0 / 0</div>
+  <div id="timer">花費時間：0 秒</div>
+
+  <script>
+    const words = ['紅色', '藍色', '綠色', '黃色'];
+    const colors = ['red', 'blue', 'green', 'orange'];
+    let score = 0;
+    let total = 0;
+    let startTime = null;
+
+    function updateTimerDisplay(seconds) {
+      document.getElementById('timer').textContent = `花費時間：${seconds} 秒`;
+    }
+
+    function nextQuestion() {
+      if (total === 0) {
+        // 開始計時
+        startTime = Date.now();
+      }
+
+      const word = words[Math.floor(Math.random() * words.length)];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      document.getElementById('word').textContent = word;
+      document.getElementById('word').style.color = color;
+
+      const buttonsDiv = document.getElementById('buttons');
+      buttonsDiv.innerHTML = '';
+      colors.forEach((c, i) => {
+        const btn = document.createElement('button');
+        btn.textContent = words[i];
+        btn.style.backgroundColor = c;
+        btn.style.color = 'white';
+        btn.onclick = () => {
+          total++;
+          if (c === color) score++;
+          document.getElementById('score').textContent = `分數：${score} / ${total}`;
+
+          if (total < 10) {
+            nextQuestion();
+          } else {
+            const endTime = Date.now();
+            const durationSeconds = Math.round((endTime - startTime) / 1000);
+            updateTimerDisplay(durationSeconds);
+
+            document.getElementById('word').textContent = '完成！';
+            buttonsDiv.innerHTML = '';
+          }
+        };
+        buttonsDiv.appendChild(btn);
+      });
+    }
+
+    nextQuestion();
+  </script>
+</body>
+</html>
